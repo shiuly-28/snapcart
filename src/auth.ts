@@ -27,7 +27,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               throw new Error("incorrecet password")
             }
             return{
-              id:user._id,
+              id:user._id.toString,
               email:user.email,
               name:user.name,
               role:user.role
@@ -38,11 +38,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
     })
   ],
-
   callbacks:{
-    // token
-    jwt(params){
+    jwt({token, user}){
+      if(user){
+        token.id=user.id,
+        token.name=user.name,
+        token.email=user.email,
+        token.role=user.role
 
+      }
+      return token
     },
-  }
+    session({session, token}){
+      if(session.user){
+        session.user.id=token.id as string,
+        session.user.name=token.name as string
+        session.user.email=token.email as string
+        session.user.role=token.role as string
+      }
+      return session
+    },
+  },
+
+pages:{
+  signIn:"/login",
+  error:"/login"
+},
+session:{
+  strategy:"jwt",
+  maxAge:10*24*60*60
+},
+secret:process.env.AUTH_SECRET
 })
