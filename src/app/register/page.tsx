@@ -7,7 +7,7 @@ function Register() {
   const [step, setStep]=useState(1)
   return (
     <div>
-      {step==1 ?<Welcome nextStep={setStep}/>:<RegisterFrom/>}
+      {step==1 ?<Welcome nextStep={setStep}/>:<RegisterFrom previousStep={setStep}/>}
       
     </div>
   )
