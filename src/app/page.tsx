@@ -20,9 +20,12 @@ async function Home() {
     if(inComplete){
       return<EditRoleMobile/>
     }
+    const plainUser=JSON.parse(JSON.stringify(user))
+    console.log(plainUser)
+    console.log(user)
   return (
     <>
-      <Navber user={user}/>
+      <Navber user={plainUser}/>
     </>
   )
 }
