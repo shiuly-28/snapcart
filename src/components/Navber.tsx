@@ -1,5 +1,6 @@
-import { Search } from 'lucide-react'
+import { Search, ShoppingBag, ShoppingCartIcon, User } from 'lucide-react'
 import mongoose from 'mongoose'
+import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 interface IUser{
@@ -21,8 +22,17 @@ function Navber({user}:{user:IUser}) {
       </Link>
       <form className='hidden md:flex items-center bg-white rounded-full px-4 py-2 w-1/2 max-w-lg shadowmd'>
          <Search className='text-gray-500 w-5 h-5 mr-2'/>
-         <input type="text" placeholder='Search groceries...' />
+         <input type="text" placeholder='Search groceries...' className='w-full outline-none' />
       </form>
+      <div className='flex items-center gap-3 md:gap-6 relative'>
+    <Link href={""} className='relative bg-white rounded-full w-11 flex items-center justify-center shadow-md hover:scale-105 transition'>
+    <ShoppingCartIcon className='text-orange-600 w-6 h-6'/>
+    <span className='absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center font-semibold shadow rounded-full'>0</span>
+    </Link>
+    <div className='bg-white rounded-full  w-11 h-11 flex items-center justify-center overflow-hidden shadow-md hover:scale-105 transition-transform'>
+      {user.image?<Image src={user.image} alt='user' fill className='object-cover rounded-full'/>:<User/>}
+    </div>
+      </div>
     </div>
   )
 }
