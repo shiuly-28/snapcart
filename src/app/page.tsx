@@ -1,6 +1,7 @@
 
 import { auth } from '@/auth'
 import EditRoleMobile from '@/components/EditRoleMobile'
+import Navber from '@/components/Navber'
 import connectDb from '@/lib/db'
 import User from '@/models/user.models'
 import { redirect } from 'next/navigation'
@@ -20,9 +21,9 @@ async function Home() {
       return<EditRoleMobile/>
     }
   return (
-    <div>
-      
-    </div>
+    <>
+      <Navber user={user}/>
+    </>
   )
 }
 

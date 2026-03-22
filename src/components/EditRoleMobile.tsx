@@ -1,7 +1,10 @@
 'use client';
 import React, { useState } from 'react'
 import { motion } from 'framer-motion';
-import { Bike, User, UserCog } from 'lucide-react';
+import { ArrowRight, Bike, User, UserCog } from 'lucide-react';
+import axios from 'axios';
+import { redirect } from 'next/navigation';
+
 
 function EditRoleMobile() {
   const [roles, setRoles]=useState([
@@ -10,8 +13,21 @@ function EditRoleMobile() {
     {id:"deliveryBoy", label:"Delivery Boy", icon:Bike},
   ])
   const [selectedRole, setSelectedRole]=useState("")
+  const [mobile, setMobile] = useState("")
+  const handleEdit=async()=>{
+    try{
+     const result = await axios.post("/api/user/edit-role-mobile", {
+  role: selectedRole,
+  mobile
+})
+      redirect("/")
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
   return (
-    <div className='flex flex-col min-h-screen p-6 w-full '>
+    <div className='flex flex-col min-h-screen p-6 w-full items-center '>
       <motion.h1
        initial={{
         opacity:0,
@@ -47,6 +63,52 @@ function EditRoleMobile() {
         )
       })}
       </div>
+      <motion.div
+       initial={{
+        opacity:0,
+       
+      }}
+      animate={{
+        opacity:1,
+        
+      }}
+      transition={{
+        delay:0.5,
+        duration:0.6
+      }}
+      className='flex flex-col items-center mt-10'
+      >
+        <label htmlFor='mobile' className='text-gray-700 font-medium mb-2'>Enter Your Mobile number</label>
+        <input type='tel'
+         id='mobile'
+          className='w-64 md:w-80 px-4 py-3 rounded-xl border border-gray-300 focus:right-2 focus:ring-orange-400 focus:outline-none text-gray-800'
+           placeholder='Eg.00000000000'
+           onChange={(e)=>setMobile(e.target.value)}
+           />
+      </motion.div>
+      <motion.button
+       initial={{
+        opacity:0,
+        y:20
+      }}
+      animate={{
+        opacity:1,
+        y:0
+      }}
+      transition={{
+       delay:0.7,
+      }}
+      disabled={mobile.length!==11 || !selectedRole}
+      className={`inline-flex items-center gap-2 font-semibold py-3 px-8 rounded-2xl shadow-md transition-all duration-200 w-[200px] mt-10 ${
+        selectedRole && mobile.length === 11
+        ?"bg-orange-600 hover:bg-orange-700 text-white"
+            :"bg-gray-300 text-gray-500 cursor-not-allowed"
+      }`}
+      onClick={handleEdit}
+      >
+       Go to Home
+        <ArrowRight/>
+      </motion.button>
     </div>
   )
 }
