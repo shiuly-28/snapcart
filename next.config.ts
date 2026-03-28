@@ -5,9 +5,13 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'lh3.googleusercontent.com', // এখানে 'l' (L) হবে, '1' (one) নয়
-        port: '',
-        pathname: '/**', // সব ধরনের ইমেজ পাথ এলাউ করার জন্য
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.postimg.cc', // এটি মিসিং ছিল
+        pathname: '/**',
       },
     ],
   },

@@ -5,7 +5,14 @@ import Navber from '@/components/Navber'
 import connectDb from '@/lib/db'
 import User from '@/models/user.models'
 import { redirect } from 'next/navigation'
+import AdminDashBoard from '@/components/AdminDashBoard'
+import DeliveryBoy from '@/components/DeliveryBoy'
+
+
 import React from 'react'
+import UsersDashboard from '@/components/UsersDashboard'
+
+
 
 async function Home() {
   await connectDb()
@@ -26,6 +33,11 @@ async function Home() {
   return (
     <>
       <Navber user={plainUser}/>
+      {user.role == "user" ?(
+        <UsersDashboard/>
+      ): user.role == "admin" ? (
+        <AdminDashBoard/>
+      ) : <DeliveryBoy/> }
     </>
   )
 }
