@@ -3,7 +3,8 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion';
 import { ArrowRight, Bike, User, UserCog } from 'lucide-react';
 import axios from 'axios';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 
 function EditRoleMobile() {
@@ -14,18 +15,24 @@ function EditRoleMobile() {
   ])
   const [selectedRole, setSelectedRole]=useState("")
   const [mobile, setMobile] = useState("")
-  const handleEdit=async()=>{
-    try{
-     const result = await axios.post("/api/user/edit-role-mobile", {
-  role: selectedRole,
-  mobile
-})
-      redirect("/")
+  const {update} = useSession()
+  const router = useRouter()
+ const handleEdit = async () => {
+  try {
+    const result = await axios.post("/api/auth/user/edit-role-mobile", {
+      role: selectedRole,
+      mobile
+    });
+
+    if (result.status === 200) {
+      console.log("Update success!");
+      await update({role:selectedRole})
+      router.push("/");
     }
-    catch(error){
-      console.log(error)
-    }
+  } catch (error) {
+    console.log("Error details:", error);
   }
+};
   return (
     <div className='flex flex-col min-h-screen p-6 w-full items-center '>
       <motion.h1

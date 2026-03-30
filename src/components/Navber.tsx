@@ -1,5 +1,5 @@
 "use client";
-import { Cross, LogOut, Package, Search, ShoppingBag, ShoppingCartIcon, User, X } from 'lucide-react'
+import { Boxes, ClipboardListIcon, Cross, LogOut, Menu, MenuIcon, Package, Plus, PlusCircle, Search, ShoppingBag, ShoppingCartIcon, Sidebar, User, X } from 'lucide-react'
 import mongoose from 'mongoose'
 import { AnimatePresence } from 'motion/react'
 import Image from 'next/image'
@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react'
 import { signOut } from 'next-auth/react';
+import { createPortal } from 'react-dom';
 
 interface IUser{
     _id:mongoose.Types.ObjectId
@@ -23,6 +24,7 @@ function Navber({user}:{user:IUser}) {
     const [open, setOpen]=useState(false)
     const ProfileDropDown=useRef<HTMLDivElement>(null)
     const [searchberOpen, setSearchBarOpen]=useState(false)
+    const [menuOpen, setMenuOpen]=useState(false)
 
     useEffect(()=>{
       const handleClickOutside=(e:MouseEvent)=>{
@@ -34,33 +36,71 @@ function Navber({user}:{user:IUser}) {
       document.addEventListener("mousedown", handleClickOutside)
       return()=>document.removeEventListener("mousedown", handleClickOutside )
     },[])
+
+    const SideBar=menuOpen?createPortal(
+      <AnimatePresence>
+        <motion.div
+        initial={{x:-100, opacity:0}}
+        animate={{x:-100,opacity:1}}
+        exit={{x:-100,opacity:0}}
+        transition={{type:"spring", stiffness:100, damping:10}}
+        className='fixed top-0 left-0 h-full w-[75%] sm:w-[60%] z-9999 bg-linear-to-b from-amber-600/80
+         via-amber-700/80 to-amber-800/70 backdrop-blur-xl border-r border-amber-400/20
+        shadow-[0_0_50px_-10px_rgba(0,255,100,0.3)] flex flex-col p-6 text-white'
+        >
+          <div className='flex justify-between items-center mb-2'>
+            <h1 className='font-extrabold text-2xl tracking-wide text-white/90 '>Admin Panel</h1>
+            <button className='text-white/80 hover:text-red-400 text-2xl font-bold transition '><X/></button>
+          </div>
+        </motion.div>
+      </AnimatePresence>,
+      document.body
+
+    ):null
   return (
     <div className='w-[95%] fixed top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-orange-300 to-orange-500 rounded-2xl shadow-lg shadow-black/30 flex justify-between items-center h-20 px-4 md:px z-50'> 
       <Link href={"/"} className='text-white font-extrabold text-2xl sm:text-3xl tracking-wide hover:scale-105 transitions-transform'>
       SwiftPick
       </Link>
-    <div className="flex items-center w-full px-4 py-2">
-  <form className='hidden md:flex items-center bg-white rounded-full px-4 py-2 max-w-lg shadow-md ml-auto border border-gray-100'>
+      {user.role=="user" &&  <form className='hidden md:flex items-center bg-white rounded-full px-4 py-2 max-w-lg shadow-md ml-auto border border-gray-100'>
     <Search className='text-gray-500 w-5 h-5 mr-2' />
     <input 
       type="text" 
       placeholder='Search groceries...' 
       className='w-full outline-none text-sm' 
     />
-  </form>
-</div>
+  </form> }
+    {/* <div className="flex items-center w-full px-4 py-2">
+ 
+</div> */}
       <div className='flex items-center gap-3 md:gap-6 relative'>
-        <div className='bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md hover:scale-105 transtion md:hidden'
+        
+        {user.role == "user" && <>  <div className='bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md hover:scale-105 transtion md:hidden'
         onClick={()=>setSearchBarOpen((prev)=>!prev)}
         >
         <Search className='text-amber-500 w-6 h-6'/>
         </div>
+
     <Link href={""} className='relative bg-white rounded-full w-11 flex items-center justify-center shadow-md hover:scale-105 transition'>
     <ShoppingCartIcon className='text-orange-600 w-6 h-6'/>
     <span className='absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center font-semibold shadow rounded-full'>0</span>
-    </Link>
+    </Link></>}
+      
+      {user.role=="admin" && <>
+      <div className='hidden md:flex gap-3'>
+        <Link href={""} className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600  transition-all'><PlusCircle className='w-5 h-5'/> Add Grocery</Link>
+        <Link href={""}  className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600 transition-all'><Boxes/>Veiw Grocery</Link>
+        <Link href={""}  className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600 transition-all'><ClipboardListIcon/>Manage Orders</Link>
+        
+      </div>
+      <div className='md:hidden bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md'
+       onClick={() =>setMenuOpen(prev=>!prev)}>
+          <Menu className='text-amber-500 w-6 h-6'/>
+        </div>
+      </>}
+
     <div className='relative' ref={ProfileDropDown}>
-    <div className='bg-white rounded-full  w-11 h-11 flex items-center justify-center overflow-hidden shadow-md hover:scale-105 transition-transform ' 
+    <div className='bg-white rounded-full  w-11 h-11 flex items-center justify-center overflow-hidden shadow-md hover:scale-105 transition-transform '
     onClick={()=>setOpen(prev=>!prev)}>
       {user.image?<Image src={user.image} alt='user' fill className='object-cover rounded-full'/>:<User/>}
     </div>
@@ -81,12 +121,14 @@ function Navber({user}:{user:IUser}) {
             <div className='text-xs text-gray-500 capitalize'>{user.role}</div>
           </div>
         </div>
-        <Link href={""} className='flex items-center gap-2 px-3 py-3 hover:bg-amber-50 rounded-lg text-gray-400 font-medium'
+
+        {user.role == "user" && <Link href={""} className='flex items-center gap-2 px-3 py-3 hover:bg-amber-50 rounded-lg text-gray-400 font-medium'
        
          onClick={()=>setOpen(false)}>
         <Package className='w-5 h-5 text-amber-600'/>
         My Orders
-        </Link>
+        </Link>}
+
         <button className='flex items-center gap-2 px-3 py-3 hover:bg-amber-50 rounded-lg text-gray-400 font-medium'
         onClick={()=>{
           setOpen(false)
@@ -122,8 +164,11 @@ function Navber({user}:{user:IUser}) {
         </motion.div>
       }
     </AnimatePresence>
+
+    
     </div>
       </div>
+      {SideBar}
     </div>
   )
 }
