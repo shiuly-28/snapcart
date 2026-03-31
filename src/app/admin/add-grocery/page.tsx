@@ -1,9 +1,11 @@
 "use client"
 
-import { ArrowLeft, PlayCircle } from 'lucide-react';
+import { ArrowLeft, PlayCircle, Upload } from 'lucide-react';
 import Link from 'next/link';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useState } from 'react';
 import {motion} from 'motion/react'
+import Image from 'next/image';
+import axios from 'axios';
 
 const categories=[
     "Fruits & Vegetable",
@@ -35,6 +37,23 @@ const AddGrocery = () => {
         setBackendImage(file)
         setPreview(URL.createObjectURL(file))
     }
+    const handleSubmit =async (e:FormEvent)=> {
+        e.preventDefault()
+        try{
+            const formData=new FormData()
+            formData.append("name", name)
+            formData.append("category", category)
+            formData.append("price", price)
+            formData.append("unit", unit)
+            if(backendImage){
+                formData.append("image", backendImage)
+            }
+            const result = await axios.post("/api/admin/add-grocery",formData)
+            console.log(result.data)
+        }catch(error){
+            console.log(error)
+        }
+    }
     return (
         <div className='min-h-screen flex items-center justify-center 
           py-16 px-4 relative'>
@@ -57,7 +76,7 @@ const AddGrocery = () => {
                     <p className='text-gray-500 text-sm mt-2 text-center'>Fill out the details below to add a new Fresh Finds item</p>
                
             </div>
-            <form className='flex flex-col gap-6 w-full animate-pulse'>
+            <form className='flex flex-col gap-6 w-full' onSubmit={handleSubmit}>
            <div>
              <label htmlFor="" className='text-gray-700 font-medium mb-1'>Fresh Finds Name</label>
             <span className='text-red-500'>*</span>
@@ -107,15 +126,25 @@ const AddGrocery = () => {
             value={price}
             />
            </div>
-            <div>
-             <label htmlFor="image" className='text-gray-700 font-medium mb-1'>Upload Image</label>
-            <span className='text-red-500'>*</span>
-            <input type="file" accept='image/*' id='name' placeholder='eg: 120' className='w-full border border-gray-300 
-            rounded-xl px-4 py-3 outline-none focus:right-2 focus:ring-amber-500 transition-all'
+            <div className='flex flex-col sm:flex-row items-center gap-5'>
+             <label htmlFor="image" className='cursor-pointer flex items-center justify-center gap-2 bg-amber-600 font-semibold border border-amber-200 rounded-xl px-6 py-3 hover:bg-amber-500 transition-all w-full sm:w-auto'
+             ><Upload className="w-5 h-5"/>Upload Image
+          </label>
+            <input type="file"id='image' accept='image/*' hidden
             onChange={handleImageChange}
          
             />
+            {preview && <Image src={preview} width={100} height={100} alt='image'
+             className='rounded-xl shadow-md border-gray-200 object-cover'/>}
            </div>
+           <motion.button
+           whileHover={{scale:1.02}}
+           whileTap={{scale:.09}}
+           className='mt-t items-center justify-center w-full bg-linear-to-r from-amber-500 to-amber-700 text-white 
+           font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-60 transition-all flex gap-2'
+           >
+            Add Fresh Find
+           </motion.button>
             </form>
             </motion.div>
         </div>
