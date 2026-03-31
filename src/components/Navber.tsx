@@ -41,8 +41,8 @@ function Navber({user}:{user:IUser}) {
       <AnimatePresence>
         <motion.div
         initial={{x:-100, opacity:0}}
-        animate={{x:-100,opacity:1}}
-        exit={{x:-100,opacity:0}}
+        animate={{x:0,opacity:1}}
+        exit={{x:-100}}
         transition={{type:"spring", stiffness:100, damping:10}}
         className='fixed top-0 left-0 h-full w-[75%] sm:w-[60%] z-9999 bg-linear-to-b from-amber-600/80
          via-amber-700/80 to-amber-800/70 backdrop-blur-xl border-r border-amber-400/20
@@ -50,7 +50,27 @@ function Navber({user}:{user:IUser}) {
         >
           <div className='flex justify-between items-center mb-2'>
             <h1 className='font-extrabold text-2xl tracking-wide text-white/90 '>Admin Panel</h1>
-            <button className='text-white/80 hover:text-red-400 text-2xl font-bold transition '><X/></button>
+            <button className='text-white/80 hover:text-red-400 text-2xl font-bold transition' onClick={()=>setMenuOpen(false)}><X/></button>
+          </div>
+          <div className='flex items-center  gap-3 p-3 mt-3 rounded-xl bg-white/10 hover:bg-white/15 transition-all shadow-inner'>
+            <div className='relative w-12 h-12 rounded-full overflow-hidden border-2
+            border-amber-400/60 shadow-lg'>{user.image ? <Image src={user.image} alt='user' fill className='object-cover rounded-full'/> : <User/>}</div>
+            <div>
+              <h2 className='text-lg font-semibold text-white'>{user.name}</h2>
+              <p className='text-xs text-amber-200 capitalize tracking-wide'>user.role</p>
+            </div>
+          </div>
+          <div className='flex flex-col gap-3 font-medium mt-6'>
+            <Link href={"/admin/add-grocery"} className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600  transition-all'><PlusCircle className='w-5 h-5'/> Add Fresh Finds</Link>
+        <Link href={""}  className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600 transition-all'><Boxes/>Veiw Fresh Finds</Link>
+        <Link href={""}  className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600 transition-all'><ClipboardListIcon/>Manage Orders</Link>
+        
+          </div>
+          <div className='my-5 border-t border-white/20'></div>
+          <div className='flex items-center gap-3 text-red-800 font-semibold mt-auto hover:bg-red-500/20 p-3
+           rounded-lg transition-all' onClick={async ()=>await signOut({callbackUrl:"/"})}>
+            <LogOut className='w-5 h-5'/>
+            LogOut 
           </div>
         </motion.div>
       </AnimatePresence>,
@@ -88,8 +108,8 @@ function Navber({user}:{user:IUser}) {
       
       {user.role=="admin" && <>
       <div className='hidden md:flex gap-3'>
-        <Link href={""} className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600  transition-all'><PlusCircle className='w-5 h-5'/> Add Grocery</Link>
-        <Link href={""}  className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600 transition-all'><Boxes/>Veiw Grocery</Link>
+        <Link href={"/admin/add-grocery"} className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600  transition-all'><PlusCircle className='w-5 h-5'/> Add Fresh Finds</Link>
+        <Link href={""}  className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600 transition-all'><Boxes/>Veiw Fresh Finds</Link>
         <Link href={""}  className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600 transition-all'><ClipboardListIcon/>Manage Orders</Link>
         
       </div>
@@ -157,7 +177,7 @@ function Navber({user}:{user:IUser}) {
           <form className='grow'>
             <input type="text" className='w-full outline-none text-gray-600'/>
           </form>
-          <button onClick={()=>setSearchBarOpen(false)}>
+          <button onClick={()=>setMenuOpen(false)}>
             <X className='text-gray-500 w-5 h-5'/>
           </button>
 

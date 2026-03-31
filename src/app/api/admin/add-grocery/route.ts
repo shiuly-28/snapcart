@@ -4,6 +4,7 @@ import connectDb from "@/lib/db";
 import Grocery from "@/models/grocery.model";
 import { NextRequest, NextResponse } from "next/server";
 
+
 export async  function POST(req:NextRequest){
     try{
         await connectDb()
