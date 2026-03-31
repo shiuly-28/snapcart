@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowLeft, PlayCircle, Upload } from 'lucide-react';
+import { ArrowLeft, Loader, PlayCircle, Upload } from 'lucide-react';
 import Link from 'next/link';
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import {motion} from 'motion/react'
@@ -27,6 +27,7 @@ const AddGrocery = () => {
     const [category, setCategory]=useState("")
     const [unit, setUnit]=useState("")
     const [price, setPrice]=useState("")
+    const [loading, setLoading]=useState(false)
     const[preview, setPreview]=useState<string|null>()
     const[backendImage, setBackendImage]=useState<File | null>()
 
@@ -39,6 +40,7 @@ const AddGrocery = () => {
     }
     const handleSubmit =async (e:FormEvent)=> {
         e.preventDefault()
+        setLoading(true)
         try{
             const formData=new FormData()
             formData.append("name", name)
@@ -50,8 +52,10 @@ const AddGrocery = () => {
             }
             const result = await axios.post("/api/admin/add-grocery",formData)
             console.log(result.data)
+            setLoading(false)
         }catch(error){
             console.log(error)
+            setLoading(false)
         }
     }
     return (
@@ -140,10 +144,12 @@ const AddGrocery = () => {
            <motion.button
            whileHover={{scale:1.02}}
            whileTap={{scale:.09}}
+           disabled={loading}
            className='mt-t items-center justify-center w-full bg-linear-to-r from-amber-500 to-amber-700 text-white 
            font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-60 transition-all flex gap-2'
            >
-            Add Fresh Find
+            {loading?<Loader className='w-5 h-5 animate-spin'/>:"Add Fresh Find"}
+            
            </motion.button>
             </form>
             </motion.div>
