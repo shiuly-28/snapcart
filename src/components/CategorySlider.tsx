@@ -35,9 +35,24 @@ function CategorySlider() {
      console.log(scrollWidth)
       setShowLeft(scrollLeft>0)
       setShowRight(scrollLeft+clientWidth<=scrollWidth-5)
-
       
+
     }
+
+    useEffect(()=>{
+      const autoScroll=setInterval(()=>{
+        if(!scrollRef.current)return
+        const {scrollLeft, scrollWidth, clientWidth}=scrollRef.current
+        if(scrollLeft+clientWidth>=scrollWidth-5){
+        scrollRef.current.scrollTo({left:0, behavior:"smooth"})
+      }else{
+        scrollRef.current.scrollBy({left:0, behavior:"smooth"})
+      }
+      }, 2000)
+      return()=>clearInterval(autoScroll)
+
+    }, [])
+
     useEffect(()=>{
       scrollRef.current?.addEventListener("scroll", checkScroll)
       checkScroll()
@@ -56,7 +71,7 @@ function CategorySlider() {
       {showLeft && <button className='absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-amber-100 rounded-full w-10 flex items-center justify-center 
       ' onClick={()=>scroll("left")}><ChevronLeft className='w-6 h-6 text-amber-500'/></button> }
       
-      <div className='flex gap-6 overflow-x-auto px-10 pb-4 scrolbar-hide scroll-smooth' ref={scrollRef}>
+      <div className='flex gap-6 overflow-x-auto px-10 pb-4 scrollbar-hide scroll-smooth' ref={scrollRef}>
       {
         categories.map((cat)=>{
           const Icon=cat.icon

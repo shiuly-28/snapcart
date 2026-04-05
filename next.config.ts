@@ -10,8 +10,13 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'i.postimg.cc', // এটি মিসিং ছিল
+        hostname: 'i.postimg.cc',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**', // 👈 এটি প্রপার অবজেক্ট ফরম্যাটে লিখতে হবে
       },
     ],
   },
