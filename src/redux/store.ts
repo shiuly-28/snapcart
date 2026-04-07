@@ -13,4 +13,4 @@ user:userSlice
 
 export type RootState = ReturnType<typeof store.getState>
 
-export type AppDispaatch = typeof store.dispatch
+export type AppDispatch = typeof store.dispatch
