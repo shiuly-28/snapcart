@@ -1,6 +1,5 @@
-import { userSlice } from './store';
+
 import { configureStore, createSlice } from "@reduxjs/toolkit";
-import mongoose from "mongoose";
 import userSlice from "./userSlice"
 
 
