@@ -4,7 +4,10 @@ import mongoose from 'mongoose'
 import React from 'react'
 import {motion} from 'motion/react'
 import Image from 'next/image'
-import { PlusCircle, ShoppingBag } from 'lucide-react'
+import { Minus, Plus, PlusCircle, ShoppingBag } from 'lucide-react'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '@/redux/store'
+import { addToCart, decreaseQuantity, increaseQuantity } from '@/redux/cartSlice'
 
 interface IGrocery{
     _id?:mongoose.Types.ObjectId,
@@ -17,7 +20,9 @@ interface IGrocery{
     updatedAt?:Date
 } 
 function GroceryItemCard({item}:{item:IGrocery}) {
-
+  const dispatch= useDispatch<AppDispatch>()
+  const {cartData}=useSelector((state:RootState)=>state.cart)
+  const cartItem=cartData.find(i=>i._id==item._id)
   return (
     <motion.div
      initial={{opacity:0, y:50, scale:0.9}}
@@ -41,10 +46,26 @@ function GroceryItemCard({item}:{item:IGrocery}) {
         <span className='text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full gap-1'>Unit: {item.unit}</span>
         <span className='text-xs font-bold  bg-gray-100 px-2 py-1 rounded-full gap-1 text-amber-500'>৳: {item.price}</span>
        </div>
-       <motion.button className='mt-4 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white 
-       p-1 rounded-2xl'>
+       {!cartItem?<motion.button className='mt-4 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white 
+       p-1 rounded-full py-2'
+       whileTap={{scale:0.96}}
+       onClick={()=>dispatch(addToCart({...item, quantity:1}))}
+       >
         <ShoppingBag className='' size={16}/>Add to Cart
-       </motion.button>
+       </motion.button>:
+       <motion.div
+       initial={{opacity:0, y:10}}
+       animate={{opacity:1, y:0}}
+       transition={{duration:0.3}}
+       className='mt-4 flex items-center bg-amber-50 border border-amber-400 rounded-full py-3 px-4 gap-4 '
+       >
+        <button className='w-7 h-7 flex items-center justify-center rounded-full bg-amber-300
+        hover:bg-amber-200 transition-all' onClick={() => cartItem._id && dispatch(decreaseQuantity(cartItem._id!))}><Minus size={16} className='text-amber-500'/></button>
+        <span className='text-sm font-semibold text-gray-800'>{cartItem.quantity}</span>
+        <button  className='w-7 h-7 flex items-center justify-center rounded-full bg-amber-300
+        hover:bg-amber-200 transition-all'onClick={() => cartItem._id && dispatch(increaseQuantity(cartItem._id!))}><Plus size={16} className='text-amber-500'/></button>
+       </motion.div>}
+       
       </div>
     </motion.div>
 

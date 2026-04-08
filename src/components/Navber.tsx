@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react'
 import { signOut } from 'next-auth/react';
 import { createPortal } from 'react-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 interface IUser{
     _id:mongoose.Types.ObjectId
@@ -25,6 +27,7 @@ function Navber({user}:{user:IUser}) {
     const ProfileDropDown=useRef<HTMLDivElement>(null)
     const [searchberOpen, setSearchBarOpen]=useState(false)
     const [menuOpen, setMenuOpen]=useState(false)
+    const {cartData}=useSelector((state:RootState)=>state.cart)
 
     useEffect(()=>{
       const handleClickOutside=(e:MouseEvent)=>{
@@ -101,9 +104,9 @@ function Navber({user}:{user:IUser}) {
         <Search className='text-amber-500 w-6 h-6'/>
         </div>
 
-    <Link href={""} className='relative bg-white rounded-full w-11 flex items-center justify-center shadow-md hover:scale-105 transition'>
+    <Link href={"/user/cart"} className='relative bg-white rounded-full w-11 flex items-center justify-center shadow-md hover:scale-105 transition'>
     <ShoppingCartIcon className='text-orange-600 w-6 h-6'/>
-    <span className='absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center font-semibold shadow rounded-full'>0</span>
+    <span className='absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center font-semibold shadow rounded-full'>{cartData.length}</span>
     </Link></>}
       
       {user.role=="admin" && <>

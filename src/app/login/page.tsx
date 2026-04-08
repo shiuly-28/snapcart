@@ -4,7 +4,7 @@ import { ArrowLeft, EyeIcon, EyeOff, Leaf, Loader2, Lock, LogIn, Mail, User } fr
 
 import { motion } from "motion/react"
 import Image from 'next/image';
-import googleImage from "@/assests/google.png"
+import googleImage from "@/assets/google.png"
 import axios from 'axios';
 import {  FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
