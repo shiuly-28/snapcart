@@ -54,17 +54,27 @@ function GroceryItemCard({item}:{item:IGrocery}) {
         <ShoppingBag className='' size={16}/>Add to Cart
        </motion.button>:
        <motion.div
-       initial={{opacity:0, y:10}}
-       animate={{opacity:1, y:0}}
-       transition={{duration:0.3}}
-       className='mt-4 flex items-center bg-amber-50 border border-amber-400 rounded-full py-3 px-4 gap-4 '
-       >
-        <button className='w-7 h-7 flex items-center justify-center rounded-full bg-amber-300
-        hover:bg-amber-200 transition-all' onClick={() => cartItem._id && dispatch(decreaseQuantity(cartItem._id!))}><Minus size={16} className='text-amber-500'/></button>
-        <span className='text-sm font-semibold text-gray-800'>{cartItem.quantity}</span>
-        <button  className='w-7 h-7 flex items-center justify-center rounded-full bg-amber-300
-        hover:bg-amber-200 transition-all'onClick={() => cartItem._id && dispatch(increaseQuantity(cartItem._id!))}><Plus size={16} className='text-amber-500'/></button>
-       </motion.div>}
+  initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.3 }}
+  className='mt-4 flex items-center justify-center bg-amber-50 border border-amber-400 rounded-full py-3 px-4 gap-4'
+>
+  <button 
+    className='w-7 h-7 flex items-center justify-center rounded-full bg-amber-300 hover:bg-amber-200 transition-all' 
+    onClick={() => cartItem._id && dispatch(decreaseQuantity(cartItem._id!))}
+  >
+    <Minus size={16} className='text-amber-500'/>
+  </button>
+
+  <span className='text-sm font-semibold text-gray-800'>{cartItem.quantity}</span>
+
+  <button 
+    className='w-7 h-7 flex items-center justify-center rounded-full bg-amber-300 hover:bg-amber-200 transition-all'
+    onClick={() => cartItem._id && dispatch(increaseQuantity(cartItem._id!))}
+  >
+    <Plus size={16} className='text-amber-500'/>
+  </button>
+</motion.div>}
        
       </div>
     </motion.div>
