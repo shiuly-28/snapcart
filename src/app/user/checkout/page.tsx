@@ -5,6 +5,7 @@ import { motion, number } from "framer-motion" // motion/react এর বদল�
 import { useRouter } from "next/navigation"
 import React, { useEffect, useState } from 'react'
 import { useSelector } from "react-redux"
+import MapVeiw from "@/components/MapVeiw"
 
 function Checkout() {
   const router = useRouter()
@@ -151,7 +152,7 @@ function Checkout() {
             </div>
             <div className="relative mt-6 h-[330px] rounded-xl overflow-hidden border 
             border-gray-200 shadow-inner">
-
+              <MapVeiw position={position}/>
             </div>
           </div>
         </motion.div>
