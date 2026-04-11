@@ -1,167 +1,187 @@
-'use client'
-import { RootState } from "@/redux/store"
-import { ArrowLeft, Building, Building2, Home, MapPin, Phone, Search, User } from "lucide-react"
-import { motion, number } from "framer-motion" // motion/react এর বদলে framer-motion চেক করুন যদি এরর দেয়
-import { useRouter } from "next/navigation"
+"use client"
 import React, { useEffect, useState } from 'react'
-import { useSelector } from "react-redux"
-import MapVeiw from "@/components/MapVeiw"
+import {motion, number} from "motion/react"
+import { ArrowLeft, Home, MapPin, Phone, User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet'
+import L, { LatLngExpression, LeafletEvent, } from 'leaflet'
+import 'leaflet/dist/leaflet.css';
+import axios from 'axios'
+
+const markerIcon=new L.Icon({
+  iconUrl:"https://cdn-icons-png.flaticon.com/128/684/684908.png",
+  iconSize:[40,40],
+  iconAnchor:[20,40]
+})
 
 function Checkout() {
   const router = useRouter()
-  const { userData } = useSelector((state: RootState) => state.user)
-  
-  const [address, setAddress] = useState({
-    fullName: "",
-    mobile: "",
-    city: "",
-    state: "",
-    pincode: "",
-    fullAddress: ""
+  const {userData}=useSelector((state:RootState)=>state.user)
+  const [address, setAddress]=useState({
+    fullName:"",
+    mobile:"",
+    city:"",
+    state:"",
+    pincode:"",
+    fullAddress:""
+
   })
 
-  const[position,setPosition]=useState<[number,number]|null>(null)
+  const [position, setPosition]=useState<[number, number] | null>(null)
   useEffect(()=>{
     if(navigator.geolocation){
-      navigator.geolocation.getCurrentPosition((pos)=>{
-        const {latitude,longitude}=pos.coords
-        setPosition([latitude,longitude])
+      navigator.geolocation.getCurrentPosition((pos) =>{
+        if(navigator.geolocation){
+          navigator.geolocation.getCurrentPosition((pos)=>{
+            const {latitude,longitude}=pos.coords
+            setPosition([latitude,longitude])
+          },(error)=>{console.log('location error', error)},{enableHighAccuracy:true,maximumAge:0,timeout:10000})
+        }
       })
     }
   },[])
 
   useEffect(()=>{
-    if(userData){
-      setAddress((prev)=>({...prev,fullName:userData?.name || ""}))
-      setAddress((prev)=>({...prev,mobile:userData?.mobile || ""}))
+   if(userData){
+     setAddress((prev)=>({...prev,fullName:userData?.name || ""}))
+     setAddress((prev)=>({...prev,mobile:userData?.mobile || ""}))
+   
+   }
+  },[userData])
+
+  const DraggableMarker:React.FC=()=>{
+    const map=useMap()
+    useEffect(()=>{
+      map.setView(position as LatLngExpression, 15,{animate:true})
+    },[position,map])
+
+    return   <Marker 
+   icon={markerIcon}
+    position={position as LatLngExpression}
+    draggable={true}
+    eventHandlers={{
+      dragend:(e:LeafletEvent)=>{
+        const marker=e.target as L.Marker
+        const{lat,lng}=marker.getLatLng()
+        setPosition([lat,lng])
+      }
+    }}
+    />
+  }
+
+  useEffect(()=>{
+    const fetchAddress=async ()=>{
+      if(!position)return
+      try{
+        const result=await axios.get(`https://nominatim.openstreetmap.org/reverse?lat=${position[0]}&lon=${position[1]}&format=json`)
+        console.log(result.data)
+        setAddress(prev=>({...prev,
+          city:result.data.address.city,
+          state:result.data.address.state,
+        pincode:result.data.address.postcode
+        }))
+      }catch(error){
+        console.log(error)
+      }
     }
-  },[])
- return (
-    <div className='w-[92%] md:w-[80%] mx-auto py-10 relative'>
-      {/* Back Button */}
+    fetchAddress()
+  },[position])
+  return (
+    <div className='w-[90%] md:w-[80%] mx-auto py-10 relative'>
       <motion.button
-        whileTap={{ scale: 0.97 }}
-        className="absolute left-0 top-2 flex items-center gap-2 text-amber-600 font-semibold"
-        onClick={() => router.push("/user/cart")}
+      whileHover={{scale:1.06}}
+      whileTap={{scale:0.97}}
+      className='absolute left-0 top-2 flex items-center gap-2 text-amber-500
+       hover:text-amber-600 font-semibold'
+       onClick={()=>router.push("/user/cart")}
       >
-        <ArrowLeft size={16} />
-        <span>Back to Cart</span>
+        <ArrowLeft size={16}/>
+        <span>Back To Cart</span>
       </motion.button>
 
       <motion.h1
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="text-3xl md:text-4xl font-bold text-center text-amber-500 mb-10"
-      >
-        Checkout
-      </motion.h1>
-
-      <div className="grid md:grid-cols-2 gap-8">
+      initial={{opacity:0, y:10}}
+      animate={{opacity:1, y:0}}
+      transition={{duration:0.3}}
+      className='text-center text-3xl font-medium text-amber-500 mb-10'
+      >CheckOut</motion.h1>
+      <div className='grid md:grid-cols-2 gap-8'>
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3 }}
-          className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100"
+        initial={{opacity:0, x:-20}}
+      animate={{opacity:1, x:0}}
+      transition={{duration:0.3}}
+        className='bg-white rounded-2xl shadow-xl hover:shadow-xl transition-all duration-300
+        p-6 border border-gray-100'
         >
-          <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-            <MapPin className="text-amber-600" size={20} /> Delivery Address
+          <h2 className='text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2'>
+            <MapPin className='text-amber-500'/>Delivery Address
           </h2>
-
-          <div className="space-y-4">
-            {/* Full Name */}
-            <div className="relative flex items-center">
-              <User className="absolute left-3 text-amber-500 pointer-events-none" size={18} />
-              <input
-                type="text"
-                value={address.fullName}
-                onChange={(e) =>setAddress((prev)=>({...prev,fullName:address.fullName || ""}))}
-                className="pl-10 w-full h-11 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:border-amber-500 transition-all"
-                placeholder="Full Name"
-              />
+          <div className='space-y-4'>
+            <div className='relative '>
+             <User className='absolute left-3 top-1/2 -translate-y-1/2 text-amber-500 ' size={18}/>
+              <input type='text' value={address.fullName}
+               onChange={(e)=>setAddress((prev)=>({...prev,fullName:address.fullName}))} className='pl-10 w-full p-1
+               border rounded-lg text-sm bg-gray-50' placeholder='name'/>
             </div>
-
-            {/* Mobile */}
-            <div className="relative flex items-center">
-              <Phone className="absolute left-3 text-amber-500 pointer-events-none" size={18} />
-              <input
-                type="text"
-                value={address.mobile}
-                onChange={(e) =>setAddress((prev)=>({...prev,mobile:address.mobile || ""}))}
-                className="pl-10 w-full h-11 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:border-amber-500 transition-all"
-                placeholder="Mobile Number"
-              />
+            <div className='relative '>
+             <Phone className='absolute left-3 top-1/2 -translate-y-1/2 text-amber-500 ' size={18}/>
+              <input type='text' value={address.mobile}
+              onChange={(e)=>setAddress((prev)=>({...prev,mobile:address.mobile}))} className='pl-10 w-full p-1
+               border rounded-lg text-sm bg-gray-50' placeholder='01757321528'/>
             </div>
-
-            {/* Full Address */}
-            <div className="relative flex items-center">
-              <Home className="absolute left-3 text-amber-500 pointer-events-none" size={18} />
-              <input
-                type="text"
-                value={address.fullAddress}
-                onChange={(e) =>setAddress((prev)=>({...prev,fullAddress:address.fullAddress || ""}))}
-                className="pl-10 w-full h-11 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:border-amber-500 transition-all"
-                placeholder="Full Address"
-              />
+            <div className='relative '>
+             <Home className='absolute left-3 top-1/2 -translate-y-1/2 text-amber-500 ' size={18}/>
+              <input type='text' value={address.fullAddress}
+              onChange={(e)=>setAddress((prev)=>({...prev,fullAddress:address.fullAddress}))} className='pl-10 w-full p-1
+               border rounded-lg text-sm bg-gray-50' placeholder='full Address'/>
             </div>
-
-            {/* City, State, Pincode Row */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="relative flex items-center">
-                <Building className="absolute left-2 text-amber-500 pointer-events-none" size={16} />
-                <input
-                  type="text"
-                  placeholder="City"
-                  value={address.city}
-                  onChange={(e) =>setAddress((prev)=>({...prev,city:address.city || ""}))}
-                  className="pl-8 w-full h-11 border border-gray-300 rounded-xl text-xs bg-white focus:outline-none"
-                />
+            {/* --------------- */}
+            <div className='grid grid-cols-3 gap-3'>
+               <div className='relative '>
+             <Home className='absolute left-3 top-1/2 -translate-y-1/2 text-amber-500 ' size={18}/>
+              <input type='text' value={address.city}
+              onChange={(e)=>setAddress({...address, city:e.target.value})} className='pl-10 w-full p-1
+               border rounded-lg text-sm bg-gray-50' placeholder='city'/>
+            </div>
+               <div className='relative '>
+             <Home className='absolute left-3 top-1/2 -translate-y-1/2 text-amber-500 ' size={18}/>
+              <input type='text' value={address.state}
+              onChange={(e)=>setAddress({...address, state:e.target.value})} className='pl-10 w-full p-1
+               border rounded-lg text-sm bg-gray-50' placeholder='state'/>
+            </div>
+               <div className='relative '>
+             <Home className='absolute left-3 top-1/2 -translate-y-1/2 text-amber-500 ' size={18}/>
+              <input type='text' value={address.pincode}
+              onChange={(e)=>setAddress({...address, pincode:e.target.value})} className='pl-10 w-full p-1
+               border rounded-lg text-sm bg-gray-50' placeholder='pincode'/>
+            </div>
+            </div>
+              <div className='flex gap-2 mt-3'>
+                <input type="text" placeholder='Search City or area...' className='flex-1 border rounded-lg p-3 text-sm focus:ring-2 focus:ring-amber-500'/>
+                <button className='bg-amber-500 text-white p-2 rounded-lg font-medium hover:bg-amber-600 transition-all '>Search</button>
               </div>
-              <div className="relative flex items-center">
-                <Building2 className="absolute left-2 text-amber-500 pointer-events-none" size={16} />
-                <input
-                  type="text"
-                  placeholder="State"
-                  value={address.state}
-                  onChange={(e) =>setAddress((prev)=>({...prev,state:address.state || ""}))}
-                  className="pl-8 w-full h-11 border border-gray-300 rounded-xl text-xs bg-white focus:outline-none"
-                />
-              </div>
-              <div className="relative flex items-center">
-                <Search className="absolute left-2 text-amber-500 pointer-events-none" size={16} />
-                <input
-                  type="text"
-                  placeholder="Pincode"
-                  value={address.pincode}
-                  onChange={(e) =>setAddress((prev)=>({...prev,pincode:address.pincode || ""}))}
-                  className="pl-8 w-full h-11 border border-gray-300 rounded-xl text-xs bg-white focus:outline-none"
-                />
-              </div>
-            </div>
+              <div className='relative mt-6 h-[330px] rounded-xl overflow-hidden border border-gray-300 shadow-inner'>
 
-            {/* Search Section */}
-            <div className="flex gap-2 pt-2">
-              <input 
-                type="text" 
-                placeholder="Search city or area..."
-                className="flex-1 border-2 border-amber-500 rounded-xl px-4 py-2 text-sm focus:outline-none"
-              />
-              <button className="bg-amber-600 text-white px-6 py-2 rounded-xl font-medium hover:bg-amber-700 transition-all shadow-md">
-                Search
-              </button>
-            </div>
-            <div className="relative mt-6 h-[330px] rounded-xl overflow-hidden border 
-            border-gray-200 shadow-inner">
-              <MapVeiw position={position}/>
-            </div>
+                {position && <MapContainer center={position as LatLngExpression} zoom={13} 
+     scrollWheelZoom={true} className='w-full h-full'>
+    <TileLayer
+      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    />
+    <DraggableMarker/>
+
+ 
+  </MapContainer> }
+   
+
+              </div>
           </div>
         </motion.div>
-
-        {/* <div className="hidden md:block"> */}
-          {/* Right side summary can go here */}
-        </div>
       </div>
-    // </div>
+      
+    </div>
   )
 }
 
