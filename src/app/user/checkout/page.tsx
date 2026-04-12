@@ -21,6 +21,7 @@ const markerIcon=new L.Icon({
 function Checkout() {
   const router = useRouter()
   const {userData}=useSelector((state:RootState)=>state.user)
+  const {subTotal, deliveryFee,finalTotal}=useSelector((state:RootState)=>state.cart)
   const [address, setAddress]=useState({
     fullName:"",
     mobile:"",
@@ -236,7 +237,7 @@ onClick={handleCurrentLocation}
             }`}>
               <CreditCardIcon/><span className='font-medium text-gray-600'>Pay Online (Stripe)</span>
             </button>
-            
+
             <button
             onClick={()=>setPaymentMethod("cod")}
             className={`flex items-center gap-3 w-full border rounded-lg p-3 paymentMethod === "cod
@@ -246,6 +247,26 @@ onClick={handleCurrentLocation}
               <TruckIcon/><span className='font-medium text-gray-600'>Cash On Delivery</span>
             </button>
           </div>
+          <div className=' pt-4 text-gray-700 space-y-2 text-sm sm:text-base border-t'>
+            <div className='flex justify-between'>
+              <span className=' text-amber-500'>SubTotal</span>
+              <span className='font-bold'>৳:{subTotal}</span>
+            </div>
+            <div className='flex justify-between'>
+              <span className=' text-amber-500'>Delivery Fee</span>
+              <span className='font-bold'>৳:{deliveryFee}</span>
+            </div>
+            <div className='flex justify-between text-lg border-t pt-3'>
+              <span className='font-semibold text-amber-500 '>Final Total</span>
+              <span className='font-bold '>৳:{finalTotal}</span>
+            </div>
+          </div>
+          <motion.button whileTap={{scale:0.93}}
+          className='w-full mt-6 bg-amber-500 text-white py-3 rounded-full 
+          hover:bg-amber-600 transition-all font-semibold'
+          >
+            {PaymentMethod=="cod"?"Place Order":"pasy & Order"}
+          </motion.button>
         </motion.div>
       </div>
       
