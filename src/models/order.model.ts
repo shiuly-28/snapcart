@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { number } from "motion";
 
 
 interface IOrder{
@@ -56,6 +57,7 @@ const orderSchema=new mongoose.Schema<IOrder>({
         enum:["cod", "online"],
         default:"cod"
     },
+    totalAmount:Number,
     address:{
          fullName:String,
         mobile:String,
