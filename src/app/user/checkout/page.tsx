@@ -21,7 +21,7 @@ const markerIcon=new L.Icon({
 function Checkout() {
   const router = useRouter()
   const {userData}=useSelector((state:RootState)=>state.user)
-  const {subTotal, deliveryFee,finalTotal}=useSelector((state:RootState)=>state.cart)
+  const {subTotal, deliveryFee,finalTotal, cartData}=useSelector((state:RootState)=>state.cart)
   const [address, setAddress]=useState({
     fullName:"",
     mobile:"",
@@ -34,7 +34,7 @@ function Checkout() {
   const [searchLoadng, setSearchLoading] = useState(false)
   const [searchQuery,setSearchQuery]=useState("")
   const [position, setPosition]=useState<[number, number] | null>(null)
-  const [PaymentMethod, setPaymentMethod]=useState<"cod" | "online">("cod")
+  const [paymentMethod, setPaymentMethod]=useState<"cod" | "online">("cod")
 
   useEffect(()=>{
     if(navigator.geolocation){
@@ -118,6 +118,44 @@ function Checkout() {
       })
     }
   }
+
+  const handleCod=async ()=>{
+    if(!position){
+      return null
+    }
+    try{
+      const result=await axios.post("/api/auth/user/order",{
+        userId:userData?._id,
+        items:cartData.map(item=>(
+          {
+            grocery:item._id,
+            name:item.name,
+            price:item.price,
+            unit:item.unit,
+            quantity:item.quantity,
+            image:item.image
+          }
+        )),
+        totalAmount:finalTotal,
+        address:{
+          fullName:address.fullName,
+          mobile:address.mobile,
+          city:address.city,
+          state:address.state,
+          fullAddress:address.fullAddress,
+          pincode:address.pincode,
+          latitude:position[0],
+          longitude:position[1]
+
+        },
+        paymentMethod
+      })
+      router.push("/user/order-success")
+    } catch(error){
+      console.log(error)
+    }
+  }
+
   return (
     <div className='w-[90%] md:w-[80%] mx-auto py-10 relative'>
       <motion.button
@@ -264,8 +302,15 @@ onClick={handleCurrentLocation}
           <motion.button whileTap={{scale:0.93}}
           className='w-full mt-6 bg-amber-500 text-white py-3 rounded-full 
           hover:bg-amber-600 transition-all font-semibold'
+          onClick={()=>{
+            if(paymentMethod=="cod"){
+              handleCod()
+            }else{
+              null
+            }
+          }}
           >
-            {PaymentMethod=="cod"?"Place Order":"pasy & Order"}
+            {paymentMethod=="cod"?"Place Order":"pasy & Order"}
           </motion.button>
         </motion.div>
       </div>
