@@ -51,10 +51,16 @@ export async function POST(req:NextRequest){
                             quantity:1,
                         },
                     ],
-                    metadata:{orderId:newOrder._id}
+                    metadata:{orderId:newOrder._id.toString()}
                     
                 })
+                return NextResponse.json({url:session.url},{status:200})
+
     } catch(error){
+            return NextResponse.json(
+                        {message:"user not found"},
+                        {status:400}
+                    )
 
     }
 }

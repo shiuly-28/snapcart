@@ -156,6 +156,43 @@ function Checkout() {
     }
   }
 
+  const handleOnlinePayment=async ()=>{
+      if(!position){
+      return null
+    }
+    try{
+      const result=await axios.post("/api/auth/user/payment",{
+         userId:userData?._id,
+        items:cartData.map(item=>(
+          {
+            grocery:item._id,
+            name:item.name,
+            price:item.price,
+            unit:item.unit,
+            quantity:item.quantity,
+            image:item.image
+          }
+        )),
+        totalAmount:finalTotal,
+        address:{
+          fullName:address.fullName,
+          mobile:address.mobile,
+          city:address.city,
+          state:address.state,
+          fullAddress:address.fullAddress,
+          pincode:address.pincode,
+          latitude:position[0],
+          longitude:position[1]
+
+        },
+        paymentMethod
+      })
+      window.location.href=result.data.url
+    }catch(error){
+      console.log(error)
+    }
+  }
+
   return (
     <div className='w-[90%] md:w-[80%] mx-auto py-10 relative'>
       <motion.button
@@ -306,7 +343,7 @@ onClick={handleCurrentLocation}
             if(paymentMethod=="cod"){
               handleCod()
             }else{
-              null
+              handleOnlinePayment()
             }
           }}
           >
