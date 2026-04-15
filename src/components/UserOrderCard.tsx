@@ -2,6 +2,7 @@
 import {motion} from 'motion/react'
 import { IOrder } from '@/models/order.model'
 import React from 'react'
+import { CreditCard, Truck } from 'lucide-react'
 
 function UserOrderCard({order}:{order:IOrder}) {
   const getStatusColor=(status:string)=>{
@@ -49,10 +50,14 @@ function UserOrderCard({order}:{order:IOrder}) {
 
       </div>
       <div className='p-5 space-y-4'>
-        <div className='flex items-center gap-2 text-amber-500 text-sm '>
-          {order.paymentMethod}
+        {order.paymentMethod=="cod"?<div className='flex items-center gap-2 text-amber-500 text-sm '>
+          <Truck size={16} className='text-amber-500'/>
+          Cash On Delivery
+      </div>:<div className='flex items-center gap-2 text-amber-500 text-sm '>
+        <CreditCard size={16} className='text-amber-500'/>
+        Online Payment
+         </div> }
         </div>
-      </div>
     </motion.div>
   )
 }
