@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { number } from "motion";
 
 
-interface IOrder{
+export interface IOrder{
     _id:mongoose.Types.ObjectId
     user:mongoose.Types.ObjectId
     items:[
@@ -36,7 +36,7 @@ interface IOrder{
 const orderSchema=new mongoose.Schema<IOrder>({
     user:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"user",
+        ref:"User",
         required:true
     },
     items:[
