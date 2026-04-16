@@ -1,10 +1,13 @@
 "use client"
 import {motion} from 'motion/react'
 import { IOrder } from '@/models/order.model'
-import React from 'react'
-import { CreditCard, Truck } from 'lucide-react'
+import React, { useState } from 'react'
+import { ChevronDown, ChevronUp, ChevronUpIcon, CreditCard, MapPin, Package, Truck } from 'lucide-react'
+import { div } from 'motion/react-client'
+import Image from 'next/image'
 
 function UserOrderCard({order}:{order:IOrder}) {
+  const [expanded, setExpended]=useState(false)
   const getStatusColor=(status:string)=>{
     switch (status) {
       case "pending":
@@ -57,6 +60,49 @@ function UserOrderCard({order}:{order:IOrder}) {
         <CreditCard size={16} className='text-amber-500'/>
         Online Payment
          </div> }
+
+         <div className='flex items-center gap-2 text-gray-700 text-sm'>
+          <MapPin size={16} className='text-amber-500'/>
+         
+          <span className='truncate'>{order.address.fullAddress}</span>
+         </div>
+
+         <div className='border-t text-gray-500 pt-3'>
+          <button 
+          onClick={()=>setExpended(prev=>!prev)}
+          className='w-full flex justify-between items-center text-sm font-medium hover:text-amber-500 transition'
+          >
+            <span className='flex items-center gap-2'>
+              <Package size={16} className='text-amber-500'/>
+              {expanded?"Hide Order Items":`Veiw ${order.items.length} Items`}
+            </span>
+            {expanded?<ChevronUp className='text-amber-500' size={16}/>:<ChevronDown/>}
+          </button>
+          <motion.div 
+          initial={{height: 0, opacity: 0}}
+          animate={{
+            height:expanded ? "auto" : 0,
+            opacity: expanded ? 1 : 0,
+          }}
+          transition={{duration: 0.3}}
+          className='overflow-hidden'
+          >
+            <div className='mt-3 space-y-3'>
+              {order.items.map((item,index)=>(
+                <div
+                key={index}
+                className='flex justify-between items-center bg-gray-50 rounded-xl
+                px-3 py-2 hover:bg-gray-100 transition'>
+                  <div className='flex items-center gap-3'>
+                    <Image src={item.image} alt={item.name} width={48} height={48} className="rounded-lg
+                    objacet-cover border border-gray-200"/>
+                  </div>
+
+                </div>
+              ))}
+            </div>
+          </motion.div>
+         </div>
         </div>
     </motion.div>
   )
