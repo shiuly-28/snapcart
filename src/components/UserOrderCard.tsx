@@ -96,7 +96,13 @@ function UserOrderCard({order}:{order:IOrder}) {
                   <div className='flex items-center gap-3'>
                     <Image src={item.image} alt={item.name} width={48} height={48} className="rounded-lg
                     objacet-cover border border-gray-200"/>
+                    <div>
+                      <p className='text-sm font-medium text-gray-800'>{item.name}</p>
+                      <p>{item.quantity}x{item.unit}</p>
+                    </div>
                   </div>
+
+                   <p className='text-sm font-semibold text-gray-800'>{Number(item.price)*item.quantity}</p>
 
                 </div>
               ))}
