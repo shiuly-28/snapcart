@@ -113,7 +113,7 @@ function Navber({user}:{user:IUser}) {
       <div className='hidden md:flex gap-3'>
         <Link href={"/admin/add-grocery"} className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600  transition-all'><PlusCircle className='w-5 h-5'/> Add Fresh Finds</Link>
         <Link href={""}  className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600 transition-all'><Boxes/>Veiw Fresh Finds</Link>
-        <Link href={""}  className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600 transition-all'><ClipboardListIcon/>Manage Orders</Link>
+        <Link href={"/admin/manage-orders"}  className='flex items-center gap-6 bg-white text-black font-semibold px-4 py-2 rounded-full hover:bg-amber-600 transition-all'><ClipboardListIcon/>Manage Orders</Link>
         
       </div>
       <div className='md:hidden bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md'

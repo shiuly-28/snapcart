@@ -67,7 +67,7 @@ function UserOrderCard({order}:{order:IOrder}) {
           <span className='truncate'>{order.address.fullAddress}</span>
          </div>
 
-         <div className='border-t text-gray-500 pt-3'>
+         <div className='border-t text-gray-300 pt-3'>
           <button 
           onClick={()=>setExpended(prev=>!prev)}
           className='w-full flex justify-between items-center text-sm font-medium hover:text-amber-500 transition'
@@ -98,7 +98,7 @@ function UserOrderCard({order}:{order:IOrder}) {
                     objacet-cover border border-gray-200"/>
                     <div>
                       <p className='text-sm font-medium text-gray-800'>{item.name}</p>
-                      <p>{item.quantity}x{item.unit}</p>
+                      <p className='text-gray-600 '>{item.quantity} x {item.unit}</p>
                     </div>
                   </div>
 
@@ -109,7 +109,19 @@ function UserOrderCard({order}:{order:IOrder}) {
             </div>
           </motion.div>
          </div>
+
+         <div className='border-t pt-3 flex justify-between items-center text-sm font-semibold text-gray-300'>
+          <div className="flex gap-3">
+            <Truck className='text-amber-500 mt-1' size={16}/>
+              <span className='text-gray-500'> Delivery: <span className='text-amber-500'>{order.status}</span></span>
+          </div>
+          <div className="text-gray-700">
+            Total: <span className='text-amber-500'>{order.totalAmount}</span>
+          </div>
+         </div>
         </div>
+
+        
     </motion.div>
   )
 }
