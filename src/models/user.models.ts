@@ -63,6 +63,10 @@ location:{
 socketId:{
     type:String,
     default:null
+},
+isOnline:{
+    type:Boolean,
+    default:false
 }
 }, {timestamps:true})
 

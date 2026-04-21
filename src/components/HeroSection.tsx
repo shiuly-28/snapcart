@@ -10,12 +10,15 @@ import { getSocket } from '@/lib/socket'
 
 
 function HeroSection() {
+  const{userData} = useSelector((state:RootState)=>state.user)
   useEffect(()=>{
-    const socket=getSocket()
-  },[])
+    if(userData){
+        const socket=getSocket()
+    socket.emit('identity',userData?._id)
+    }
+  
+  },[userData])
 
-  const {userData}=useSelector((state:RootState)=>state.user)
-  console.log(userData)
    const slides=[
     {
       id:1,
