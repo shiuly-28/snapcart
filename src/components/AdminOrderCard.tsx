@@ -4,10 +4,20 @@ import React, { useState } from 'react'
 import {motion} from 'motion/react'
 import { ChevronDown, ChevronUp, CreditCard, MapPin, Package, Phone, Truck, User } from 'lucide-react'
 import Image from 'next/image'
+import axios from 'axios'
 
 function AdminOrderCard({order}:{order:IOrder}) {
     const [expanded, setExpended] = useState(false)
     const statusOption=["pending", "out of delivery"]
+
+    const updateStatus=async(orderId:string,status:string)=>{
+      try{
+          const result=await axios.post(`/api/admin/update-order-status/${orderId}`,{status})
+          console.log(result.data)
+      }catch(error){
+        console.log(error)
+      }
+    }
   return (
     <motion.div 
     key={order._id.toString()}
@@ -63,7 +73,10 @@ function AdminOrderCard({order}:{order:IOrder}) {
                 {order.status}
             </span>
             <select className='border border-gray-300 rounded-lg px-3 py-1 text-sm shadow-sm hover:border-amber-400 focus:ring-2
-            focus:ring-amber-400 outline-none'>
+            focus:ring-amber-400 outline-none'
+            value={order.status}
+            onChange={(e)=>updateStatus(order._id?.toString(),e.target.value)}
+            >
                 {
                     statusOption.map(st=>(
                         <option key={st} value={st}>{st.toUpperCase()}</option>

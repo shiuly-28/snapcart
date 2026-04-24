@@ -1,4 +1,5 @@
 import connectDb from "@/lib/db";
+import DeliveryAssigment from "@/models/deliveryAssignment.model";
 import Order from "@/models/order.model";
 import User from "@/models/user.models";
 import { NextRequest, NextResponse } from "next/server";
@@ -17,7 +18,7 @@ export async function POST(req:NextRequest,{params}:{params:{orderId:string}}){
         }
         order.status=status
         
-        let availableDeliveryBoys:any=[]
+        let deliveryBoysPayload:any=[]
         if(status==="out of delivery" && !order.assignment){
             const {latitude, longitude}=order.address
             const nearByDeliveryBoys=await User.find({
@@ -29,8 +30,48 @@ export async function POST(req:NextRequest,{params}:{params:{orderId:string}}){
                     }
                 }
             })
-        }
-    }catch(error){
+            const nearByIds=nearByDeliveryBoys.map((b)=>b._id)
+            const busyIds=await DeliveryAssigment.find({
+                assignedTo:{$in:nearByIds},
+                status:{$nin:["brodcasted", "assigned", "completed"]}
+            }).distinct("assignedTo")
+            const busyIdSet=new Set(busyIds.map(b=>String(b)))
+            const availableDeliveryBoys=nearByDeliveryBoys.filter(
+                b=>!busyIdSet.has(String(b._id))
+            )
+            const candidates=availableDeliveryBoys.map(b=>b._id)
+            if(candidates.length==0){
+                await order.save()
+                return NextResponse.json(
+                {message:"There is no available Delivery Boys"},
+                {status:200}
+            )
+            }
 
+            const deliveryAssigment=await DeliveryAssigment.create({
+                order: order._id,
+                brodcastedTo:candidates,
+                status:"brodcasted"
+            })
+            order.assignment=deliveryAssigment._id,
+           deliveryBoysPayload=availableDeliveryBoys.map(b=>({
+            id:b._id,
+            name:b.name,
+            mobile:b.mobile,
+            latitude:b.location.coordinates[1],
+            longitude:b.location.coordinates[0]
+           }))
+        }
+        await order.save()
+        await order.populate("user")
+
+        return NextResponse.json({
+            assignment:order.assignment?._id,
+            availableBoys:deliveryBoysPayload
+        },{status:200})
+    }catch(error){
+          return NextResponse.json({
+           message:`updatde status error ${error}`
+        },{status:200})
     }
 }

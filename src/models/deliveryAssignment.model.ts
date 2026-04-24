@@ -40,3 +40,5 @@ const deliveryAssignmentSchema=new mongoose.Schema<IDeliveryAssigment>({
 const DeliveryAssigment=mongoose.models.DeliveryAssigment || mongoose.model("DeliveryAssigment",
     deliveryAssignmentSchema
 )
+
+export default DeliveryAssigment;
