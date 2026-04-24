@@ -1,5 +1,4 @@
 
-
 import mongoose from "mongoose";
 
 interface IUser{
@@ -13,14 +12,14 @@ interface IUser{
     location?:{
     type:{
         type:StringConstructor,
-        enum:[],
-        default:"Point"
+        enum:string[],
+        default:string
     },
     coordinates:{
         type:NumberConstructor[],
         default:number[]
-    };
-},
+    }
+}
 socketId:string | null
 isOnline:boolean
 }

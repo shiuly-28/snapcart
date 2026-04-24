@@ -1,5 +1,6 @@
 import connectDb from "@/lib/db";
 import Order from "@/models/order.model";
+import User from "@/models/user.models";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req:NextRequest,{params}:{params:{orderId:string}}){
@@ -18,7 +19,16 @@ export async function POST(req:NextRequest,{params}:{params:{orderId:string}}){
         
         let availableDeliveryBoys:any=[]
         if(status==="out of delivery" && !order.assignment){
-
+            const {latitude, longitude}=order.address
+            const nearByDeliveryBoys=await User.find({
+                role:"deliveryBoy",
+                location:{
+                    $near:{
+                        $geometry:{type:"Point", coordinates:[Number(longitude),Number(latitude)]},
+                        $maxDistance:10000
+                    }
+                }
+            })
         }
     }catch(error){
 

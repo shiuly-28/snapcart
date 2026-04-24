@@ -11,6 +11,7 @@ import DeliveryBoy from '@/components/DeliveryBoy'
 
 import React from 'react'
 import UsersDashboard from '@/components/UsersDashboard'
+import GeoUpdated from '@/components/GeoUpdated'
 
 
 
@@ -33,6 +34,7 @@ async function Home() {
   return (
     <>
       <Navber user={plainUser}/>
+      <GeoUpdated userId={plainUser._id}/>
       {user.role == "user" ?(
         <UsersDashboard/>
       ): user.role == "admin" ? (
