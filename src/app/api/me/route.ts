@@ -7,7 +7,7 @@ export async function GET(req:NextRequest) {
     const session=await auth()
     if(!session || ! session.user){
         return NextResponse.json(
-            {message:"user is not autentication"},
+            {message:"user is not authentication"},
             {status:400}
         )
     }

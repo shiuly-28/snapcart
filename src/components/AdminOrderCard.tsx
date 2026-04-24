@@ -8,12 +8,14 @@ import axios from 'axios'
 
 function AdminOrderCard({order}:{order:IOrder}) {
     const [expanded, setExpended] = useState(false)
+    const [status, setStatus]=useState<string>(order.status)
     const statusOption=["pending", "out of delivery"]
 
     const updateStatus=async(orderId:string,status:string)=>{
       try{
           const result=await axios.post(`/api/admin/update-order-status/${orderId}`,{status})
           console.log(result.data)
+          setStatus(status)
       }catch(error){
         console.log(error)
       }
@@ -64,17 +66,17 @@ function AdminOrderCard({order}:{order:IOrder}) {
         </div>
         <div className='flex flex-col items-start md:items-end gap-2'>
             <span className={`textt-xs font-semibold px-3 py-1 rounded-full capitalize ${
-                order.status === "delivered"
+                status === "delivered"
                 ? "bg-amber-100 text-amber-600"
-                : order.status === "pending"
+                :status === "pending"
                 ?"bg-yellow-100 text-yellow-600"
-                :"bg-blue-100 text-blue-600"
+                :"bg-blue-100 text-amber-500"
                 }`}>
-                {order.status}
+                {status}
             </span>
             <select className='border border-gray-300 rounded-lg px-3 py-1 text-sm shadow-sm hover:border-amber-400 focus:ring-2
             focus:ring-amber-400 outline-none'
-            value={order.status}
+            value={status}
             onChange={(e)=>updateStatus(order._id?.toString(),e.target.value)}
             >
                 {
@@ -130,7 +132,7 @@ function AdminOrderCard({order}:{order:IOrder}) {
           <div className='border-t pt-3 mt-3 flex justify-between items-center text-sm font-semibold text-gray-300'>
           <div className="flex gap-3">
             <Truck className='text-amber-500 mt-1' size={16}/>
-              <span className='text-gray-500'> Delivery: <span className='text-amber-500'>{order.status}</span></span>
+              <span className='text-gray-500'> Delivery: <span className='text-amber-500'>{status}</span></span>
           </div>
           <div className="text-gray-700">
             Total: <span className='text-amber-500'>{order.totalAmount}</span>
